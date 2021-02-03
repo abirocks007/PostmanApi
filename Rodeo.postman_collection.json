@@ -1,0 +1,587 @@
+{
+	"info": {
+		"_postman_id": "a38b755a-2458-4ed2-9b5b-04fdfbbb8332",
+		"name": "Rodeo",
+		"description": "API Collection for Rodeo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "App Authentication",
+			"item": [
+				{
+					"name": "Get Otp",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.log(\"{{appCode}}\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"appCode\": \"{{appCode}}\",\r\n    \"mobile\": \"{{phoneNo}}\",\r\n    \"challengeType\": \"SMS-OTP\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{baseURL}}/identity/api/v1/auth/challenge",
+							"protocol": "https",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"identity",
+								"api",
+								"v1",
+								"auth",
+								"challenge"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Otp With Invalid AppCode",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check Error Description\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errorDesc).to.eql(\"Invalid App Code\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"appCode\": \"ad\",\r\n    \"mobile\": \"{{phoneNo}}\",\r\n    \"challengeType\": \"SMS-OTP\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{baseURL}}/identity/api/v1/auth/challenge",
+							"protocol": "https",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"identity",
+								"api",
+								"v1",
+								"auth",
+								"challenge"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Access Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"refresh_token\", jsonData.refreshToken);\r",
+									"pm.environment.set(\"access_token\",jsonData.accessToken);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"grantType\": \"client_credentials\",\r\n   \"appCode\": \"{{appCode}}\",\r\n   \"mobile\": \"{{phoneNo}}\",\r\n   \"otp\": \"{{otp}}\",\r\n   \"challengeType\": \"SMS-OTP\",             \r\n   \"codeChallenge\":\"CODE_CHALLENGE\", \r\n   \"codeChallengeMethod\":\"S256\"\r\n} ",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{baseURL}}/identity/api/v1/oauth/token",
+							"protocol": "https",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"identity",
+								"api",
+								"v1",
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Access Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"refresh_token\", jsonData.refreshToken);\r",
+									"pm.environment.set(\"access_token\",jsonData.accessToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"grantType\": \"refresh_token\",\r\n   \"appCode\": \"{{appCode}}\",\r\n   \"mobile\": \"{{phoneNo}}\",\r\n   \"codeChallenge\":\"CODE_CHALLENGE\",\r\n   \"refreshToken\": \"{{refresh_token}}\",\r\n   \"newCodeChallenge\": \"201f29bc-bfa3-442c-af0b-081085247e25\",\r\n   \"newCodeChallengeMethod\":\"S256\"  \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{baseURL}}/identity/api/v1/oauth/token",
+							"protocol": "https",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"identity",
+								"api",
+								"v1",
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Challenge Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Allowed Challenge Types are correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.allowedChallengeType[0]).to.eql(\"SMS-OTP\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{baseURL}}/identity/api/v1/auth/challengetype?mobileNum={{phoneNo}}&appId={{appCode}}",
+							"protocol": "https",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"identity",
+								"api",
+								"v1",
+								"auth",
+								"challengetype"
+							],
+							"query": [
+								{
+									"key": "mobileNum",
+									"value": "{{phoneNo}}"
+								},
+								{
+									"key": "appId",
+									"value": "{{appCode}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"if(pm.info.requestName!=\"Get Otp With Invalid AppCode\"){",
+							"    pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"}",
+							"",
+							"",
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(6000);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Admin Authentication",
+			"item": [
+				{
+					"name": "To Get Client Credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"auth_token\", jsonData.accessToken);\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"grantType\": \"client_credentials\",\r\n   \"appCode\": \"admin\",\r\n   \"mobile\": \"9566656578\",\r\n   \"password\": \"PA33word!\",\r\n   \"challengeType\": \"PWD\",            \r\n   \"codeChallenge\":\"CODE_CHALLENGE\",\r\n   \"codeChallengeMethod\":\"S256\"\r\n} ",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{baseURL}}/identity/api/v1/oauth/token",
+							"protocol": "https",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"identity",
+								"api",
+								"v1",
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Store API",
+			"item": [
+				{
+					"name": "Get Store Info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"locationId2\", jsonData.locations[0].id);\r",
+									"pm.environment.set(\"locationId3\", jsonData.locations[1].id);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "accept-language",
+								"value": "en",
+								"type": "text"
+							},
+							{
+								"key": "app-code-version",
+								"value": "1.0.2",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{baseURL}}/store/api/v1/apps/ecomapp/store",
+							"protocol": "https",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"store",
+								"api",
+								"v1",
+								"apps",
+								"ecomapp",
+								"store"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get store location setting",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Verify Store Name\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(pm.iterationData.get(\"Peelamedu\"));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "accept-language",
+								"value": "en",
+								"type": "text"
+							},
+							{
+								"key": "app-code-version",
+								"value": "1.0.2",
+								"type": "text"
+							},
+							{
+								"key": "store-loc-id",
+								"value": "{{locationId2}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{baseURL}}/store/api/v1/storelocation/setting",
+							"protocol": "https",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"store",
+								"api",
+								"v1",
+								"storelocation",
+								"setting"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get category and sub category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Verify Category\", function () {    \r",
+									"    pm.expect(jsonData.categories[0].name).to.eql(\"Fruits & Veggies\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verify SubCategory\", function () {\r",
+									"    pm.expect(jsonData.categories[0].subCat[0].name).to.eql(\"Vegetables\");\r",
+									"});\r",
+									"\r",
+									"var actualCategories = [\"Fruits & Veggies\",\"Readymade Foods\",\"Ready to Cook\",\"Snacks\",\"Cooking Essentials\",\"Beauty Care\",\"Household Needs\",\"Bakery\",\"Beverages\",\"Dairy & Eggs\",\r",
+									"\"Baby Care\",\"Stationery\",\"Main Category\",\"Tables\"];\r",
+									"\r",
+									"for(var i=0;i<jsonData.categories.length;i++){\r",
+									"    console.log(jsonData.categories[i].name);\r",
+									"    if(actualCategories[i]==jsonData.categories[i].name){\r",
+									"        console.log(\"Expected Category matches actual category\");\r",
+									"    }\r",
+									"    else{\r",
+									"        console.log(\"Expected Category doesn't match actual category\");\r",
+									"    }\r",
+									"    for(var j=0;j<jsonData.categories[i].subCat.length;j++){\r",
+									"        console.log(jsonData.categories[i].subCat[j].name);\r",
+									"    }\r",
+									"\r",
+									"}\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "accept-language",
+								"value": "en",
+								"type": "text"
+							},
+							{
+								"key": "store-loc-id",
+								"value": "{{locationId2}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{baseURL}}/store/api/v1/categories",
+							"protocol": "https",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"store",
+								"api",
+								"v1",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
